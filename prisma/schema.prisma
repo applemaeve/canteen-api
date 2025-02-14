@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum Role {
+  superadmin
+  admin
+  customer
+}
+
+enum Jenis {
+  Makanan
+  Minuman
+}
+
+enum Action {
+  pesanan_diterima
+  dimasak
+  diantar
+  sampai
+}
+
+
+model users {
+  id        String      @id @default(uuid())
+  email     String      @unique
+  password  String
+  role      Role     
+  createdAt DateTime @default(now())
+
+  siswa siswa?       
+  stan  stan?             
+
+  @@map("users")
+
+}
+
+model siswa {
+  id          String      @id @default(uuid())
+  user        users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String      @unique
+  nama_siswa  String
+  alamat      String      @db.Text
+  telp        String
+  foto        String     
+  createdAt DateTime @default(now())
+
+  transaksi transaksi[]
+
+  @@map("siswa")
+
+}
+model stan {
+  id           String      @id @default(uuid())
+  user         users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String      @unique
+  nama_stan    String      
+  nama_pemilik String      
+  telp         String   
+  createdAt DateTime @default(now())
+
+  menu          menu[]
+  transaksi     transaksi[]
+  diskon      diskon[] 
+
+  @@map("stan")
+
+}
+
+
+model diskon {
+  id           String      @id @default(uuid())
+  nama_diskon  String      
+  persentase   Float       @default(0) @db.Double
+  tanggal_awal  DateTime
+  tanggal_akhir DateTime
+  stan         stan        @relation(fields: [stanId], references: [id], onDelete: Cascade)
+  stanId       String
+
+  menu_diskon  menu_diskon[]
+
+
+   @@map("diskon")
+}
+
+model menu_diskon {
+  id           String      @id @default(uuid())
+  diskon       diskon      @relation(fields: [diskonId], references: [id], onDelete: Cascade)
+  diskonId     String
+  menu         menu        @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId       String
+
+   @@map("menu_diskon")
+}
+
+
+model menu {
+  id           String      @id @default(uuid())
+  stan         stan        @relation(fields: [stanId], references: [id], onDelete: Cascade)
+  stanId       String
+  nama_menu String      
+  harga        Float       @default(0) @db.Double
+  jenis        Jenis      
+  foto         String
+  deskripsi    String     @db.Text 
+  createdAt    DateTime   @default(now())
+
+  menu_diskon      menu_diskon[]
+  detail_transaksi detail_transaksi[]
+
+  @@map("menu")
+
+}
+
+
+model transaksi {
+
+  id           String      @id @default(uuid())
+  date         DateTime? 
+  stan         stan        @relation(fields: [stanId], references: [id], onDelete: Cascade)
+  stanId       String
+  siswa        siswa        @relation(fields: [siswaId], references: [id], onDelete: Cascade)
+  siswaId      String
+  Totalprice   Float        @default(0) @db.Double
+  status       Action
+
+  detail_transaksi detail_transaksi[]
+  
+ @@map("transaksi")
+}
+
+model detail_transaksi {
+
+  id           String      @id @default(uuid())
+  transaksiId  String
+  menuId       String
+  quantity     Int
+  price        Float      @default(0) @db.Double
+
+  transaksi  transaksi  @relation(fields: [transaksiId], references: [id])
+  menu         menu     @relation(fields: [menuId], references: [id])
+  
+ @@map("detail_transaksi")
+}
+
