@@ -59,8 +59,8 @@ export const createDiskon = async (req: Request, res: Response) => {
       stanId: req.body.stanId || findStan!.id,
       nama_diskon: req.body.nama_diskon ,
       persentase: parseFloat(req.body.persentase),
-      tanggal_awal: req.body.tanggal_awal ,
-      tanggal_akhir: req.body.tanggal_akhir ,
+      tanggal_awal: new Date(req.body.tanggal_awal),
+      tanggal_akhir: new Date(req.body.tanggal_akhir),
     };
     const users = await diskonService.createDiskon(diskonData)
     res.status(201).json(users);

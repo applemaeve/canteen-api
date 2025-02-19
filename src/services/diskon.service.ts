@@ -2,6 +2,7 @@ import prisma from '../utils/prisma';
 
 export class DiskonService {
     async createDiskon (data: { stanId: string; nama_diskon: string; persentase: number; tanggal_awal: Date; tanggal_akhir: Date; }) {
+      console.log(data);
       return await prisma.diskon.create({
         data,
       });

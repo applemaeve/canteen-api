@@ -6,15 +6,15 @@ export const addDataSchema = Joi.object({
     nama_diskon: Joi.string().required(),
     persentase: Joi.number().required(),
     tanggal_awal: Joi.date().required(),
-    tanggal_ahir:Joi.date().required(),
+    tanggal_akhir:Joi.date().required(),
     stanId:Joi.string().required(),
   });
 
 export const updateDataSchema = Joi.object({
-    ama_diskon: Joi.string().optional(),
+    nama_diskon: Joi.string().optional(),
     persentase: Joi.number().optional(),
     tanggal_awal: Joi.date().optional(),
-    tanggal_ahir:Joi.date().optional(),
+    tanggal_akhir:Joi.date().optional(),
     stanId:Joi.string().optional(),
   });
 
